@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verdad o Reto</title>
+  <style>
+    body {
+      background: linear-gradient(to right, purple, red);
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    h1 {
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 20px;
+      background-color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      background-color: #eee;
+    }
+
+    .menu-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+}
+
+.menu-button {
+  background-color: white;
+  border: none;
+  font-size: 24px;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.menu-options {
+  display: none;
+  background-color: white;
+  position: absolute;
+  top: 60px;
+  right: 0;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  width: 200px;
+}
+
+.menu-options a {
+  display: block;
+  padding: 10px;
+  color: black;
+  text-decoration: none;
+  border-bottom: 1px solid #ccc;
+}
+
+.menu-options a:last-child {
+  border-bottom: none;
+}
+
+.menu-options a:hover {
+  background-color: #f2f2f2;
+}
+
+  </style>
+</head>
+<body>
+  <div class="menu-container">
+  <button class="menu-button" onclick="toggleMenu()">☰ Menú</button>
+  <div class="menu-options" id="menu">
+    <a href="#">Ver preguntas y retos</a>
+    <a href="#">Agregar preguntas y retos</a>
+    <a href="#">Configuración (futura)</a>
+  </div>
+</div>
+  <h1>¡Bienvenido a Verdad o Reto!</h1>
+  <button id="jugar">Jugar</button>
+</body>
+<script>
+  function toggleMenu() {
+  const menu = document.getElementById('menu');
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+
+</script>
+</html>
