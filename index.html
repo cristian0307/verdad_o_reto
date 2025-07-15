@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verdad o Reto</title>
+  <style>
+    body {
+      background: linear-gradient(to right, purple, red);
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+
+    .pantalla {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .activa {
+      display: flex;
+    }
+
+    h1 {
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 20px;
+      background-color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.3s;
+      margin: 10px;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      background-color: #eee;
+    }
+
+    .menu-container {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+    }
+
+    .menu-button {
+      background-color: white;
+      border: none;
+      font-size: 24px;
+      padding: 10px 15px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    .menu-options {
+      display: none;
+      background-color: white;
+      position: absolute;
+      top: 60px;
+      right: 0;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      padding: 10px;
+      width: 220px;
+    }
+
+    .menu-options a {
+      display: block;
+      padding: 10px;
+      color: black;
+      text-decoration: none;
+      border-bottom: 1px solid #ccc;
+      cursor: pointer;
+    }
+
+    .menu-options a:last-child {
+      border-bottom: none;
+    }
+
+    .menu-options a:hover {
+      background-color: #f2f2f2;
+    }
+
+    .triangulo {
+      width: 0;
+      height: 0;
+      border-left: 30px solid transparent;
+      border-right: 30px solid transparent;
+      border-top: 50px solid white;
+      margin-bottom: 10px;
+    }
+
+    .pregunta-item {
+      color: white;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid white;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="menu-container">
+    <button class="menu-button" onclick="toggleMenu()">☰ Menú</button>
+    <div class="menu-options" id="menu">
+      <a onclick="irAPantalla('pantalla-inicio')">Inicio</a>
+      <a onclick="irAPantalla('pantalla-ver')">Ver preguntas y retos</a>
+      <a onclick="irAPantalla('pantalla-agregar')">Agregar preguntas y retos</a>
+      <a onclick="alert('Próximamente...')">Configuración (futura)</a>
+    </div>
+  </div>
+
+  <!-- Pantalla 1: Inicio -->
+  <div class="pantalla activa" id="pantalla-inicio">
+    <h1>¿Verdad o Reto?</h1>
+    <div class="triangulo"></div>
+    <button onclick="irAPantalla('pantalla-niveles')">Jugar</button>
+  </div>
+
+  <!-- Pantalla 2: Selección de nivel -->
+  <div class="pantalla" id="pantalla-niveles">
+    <h1>Selecciona un nivel</h1>
+    <button onclick="seleccionarNivel('pacifico')">Pacífico</button>
+    <button onclick="seleccionarNivel('caliente')">Caliente</button>
+    <button onclick="seleccionarNivel('extremo')">Extremo</button>
+    <button onclick="irAPantalla('pantalla-inicio')">Volver</button>
+  </div>
+
+  <!-- Pantalla 3: Juego -->
+  <div class="pantalla" id="pantalla-juego">
+    <h1>¡Turno de jugar!</h1>
+    <button onclick="mostrarPregunta('verdad')">Verdad</button>
+    <button onclick="mostrarPregunta('reto')">Reto</button>
+    <button onclick="mostrarPregunta('aleatorio')">Aleatorio</button>
+    <p id="pregunta" style="color:white; font-size: 24px; margin: 20px;"></p>
+    <button onclick="irAPantalla('pantalla-niveles')">Volver</button>
+  </div>
+
+  <!-- Pantalla 4: Ver preguntas -->
+  <div class="pantalla" id="pantalla-ver">
+    <h1>Preguntas y Retos</h1>
+    <div id="listaPreguntas"></div>
+    <button onclick="irAPantalla('pantalla-inicio')">Volver</button>
+  </div>
+
+  <!-- Pantalla 5: Agregar preguntas -->
+  <div class="pantalla" id="pantalla-agregar">
+    <h1>Agregar nueva pregunta/reto</h1>
+    <input id="nueva" placeholder="Escribe tu verdad o reto" style="padding: 10px; width: 80%;">
+    <select id="tipo">
+      <option value="verdad">Verdad</option>
+      <option value="reto">Reto</option>
+    </select>
+    <select id="nivel">
+      <option value="pacifico">Pacífico</option>
+      <option value="caliente">Caliente</option>
+      <option value="extremo">Extremo</option>
+    </select>
+    <button onclick="agregarPregunta()">Agregar</button>
+    <button onclick="irAPantalla('pantalla-inicio')">Volver</button>
+  </div>
+
+  <script>
+    const preguntasPorNivel = JSON.parse(localStorage.getItem("preguntasPorNivel")) || {
+      pacifico: {
+        verdad: ["¿Cuántas veces te escapaste del colegio?"],
+        reto: ["Ve y grita a la calle que estás muy feliz."]
+      },
+      caliente: {
+        verdad: ["¿A quién le has robado un beso?"],
+        reto: ["Bailar el pico de la botella por 30 segundos."]
+      },
+      extremo: {
+        verdad: ["¿Cuál es la postura que más te gusta y por qué?"],
+        reto: ["Sexo oral mirando a los ojos de la otra persona"]
+      }
+    };
+
+    let nivelActual = "";
+
+    function toggleMenu() {
+      const menu = document.getElementById('menu');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function irAPantalla(id) {
+      const pantallas = document.querySelectorAll('.pantalla');
+      pantallas.forEach(p => p.classList.remove('activa'));
+      document.getElementById(id).classList.add('activa');
+      if (id === 'pantalla-ver') mostrarLista();
+    }
+
+    function seleccionarNivel(nivel) {
+      nivelActual = nivel;
+      irAPantalla('pantalla-juego');
+    }
+
+    function mostrarPregunta(tipo) {
+      const preguntas = preguntasPorNivel[nivelActual];
+      let lista;
+      if (tipo === 'aleatorio') {
+        const todas = [...preguntas.verdad, ...preguntas.reto];
+        lista = todas;
+      } else {
+        lista = preguntas[tipo];
+      }
+      const pregunta = lista[Math.floor(Math.random() * lista.length)];
+      document.getElementById("pregunta").textContent = pregunta;
+    }
+
+    function mostrarLista() {
+      const contenedor = document.getElementById("listaPreguntas");
+      contenedor.innerHTML = "";
+      for (let nivel in preguntasPorNivel) {
+        for (let tipo in preguntasPorNivel[nivel]) {
+          preguntasPorNivel[nivel][tipo].forEach(p => {
+            const div = document.createElement("div");
+            div.className = "pregunta-item";
+            div.textContent = `[${nivel} - ${tipo}] ${p}`;
+            contenedor.appendChild(div);
+          });
+        }
+      }
+    }
+
+    function agregarPregunta() {
+      const texto = document.getElementById("nueva").value;
+      const tipo = document.getElementById("tipo").value;
+      const nivel = document.getElementById("nivel").value;
+      if (texto.trim() === "") return;
+      preguntasPorNivel[nivel][tipo].push(texto);
+      localStorage.setItem("preguntasPorNivel", JSON.stringify(preguntasPorNivel));
+      document.getElementById("nueva").value = "";
+      alert("Pregunta agregada");
+    }
+  </script>
+</body>
+</html>
